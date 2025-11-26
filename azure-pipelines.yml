@@ -1,0 +1,43 @@
+trigger:
+- main
+
+pr:
+- main
+
+pool:
+  name: 'Windows-Agent'   # CHANGE THIS to your real Windows agent pool name
+
+variables:
+  system.debug: true
+
+stages:
+
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: BuildJob
+    displayName: Build on Windows
+    steps:
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean package'
+        publishJUnitResults: false
+
+- stage: SecurityScan
+  displayName: Checkmarx Full Scan Stage
+  dependsOn: Build
+  jobs:
+  - job: CheckmarxJob
+    displayName: Run All Checkmarx Scans
+    steps:
+    - task: checkmarx.ast-ado-plugin.run@1
+      displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
+      inputs:
+        CheckmarxService: 'Checkmarx-One-Service'   # CHANGE THIS
+        projectName: 'Checkmarx-ADO-Windows-AllScans'
+        branchName: '$(Build.SourceBranchName)'
+        scanType: 'sast,sca,iac,api-security'
+        enablePrDecoration: true
+        failOnHigh: false
+        failOnMedium: false
