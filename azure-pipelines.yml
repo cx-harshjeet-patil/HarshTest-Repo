@@ -75,20 +75,20 @@ stages:
                 Write-Host "PR decoration"
                 Write-Host "--scan-id    : $env:CHECKMARXAST_CXONESCANID"
                 Write-Host "--namespace : $env:CXONE_ADONAMESPACE"
-                Write-Host "--project   : $(Build.Repository.Name)"
-                Write-Host "--pr-number : $(System.PullRequest.PullRequestId)"
-                Write-Host "--base-uri  : $(CXONE_BASEURI)"
-                Write-Host "--client-id : $(CXONE_CLIENT)"
-                Write-Host "--tenant    : $(CXONE_TENANT)"
-                Write-Host "--project   : $(System.TeamProject)"
+                Write-Host "--project   : $env:BUILD_REPOSITORY_NAME"
+                Write-Host "--pr-number : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
+                Write-Host "--base-uri  : $env:CXONE_BASEURI"
+                Write-Host "--client-id : $env:CXONE_CLIENT"
+                Write-Host "--tenant    : $env:CXONE_TENANT"
+                Write-Host "--ado-proj  : $env:SYSTEM_TEAMPROJECT"
 
                 & $CX_EXE utils pr azure --debug `
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
-                  --project "$(System.TeamProject)" `
-                  --pr-number $(System.PullRequest.PullRequestId) `
-                  --token $(CXONE_PATADO) `
-                  --base-uri $(CXONE_BASEURI) `
-                  --client-id $(CXONE_CLIENT) `
-                  --client-secret $(CXONE_SECRET) `
-                  --tenant $(CXONE_TENANT)
+                  --project "$env:SYSTEM_TEAMPROJECT" `
+                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTID `
+                  --token $env:CXONE_PATADO `
+                  --base-uri $env:CXONE_BASEURI `
+                  --client-id $env:CXONE_CLIENT `
+                  --client-secret $env:CXONE_SECRET `
+                  --tenant $env:CXONE_TENANT
