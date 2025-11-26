@@ -54,29 +54,41 @@ stages:
 
           # Optional: Manual PR Decoration using PowerShell (Windows)
           - task: PowerShell@2
-            displayName: 'Manual PR Decoration (Windows)'
+            displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
             inputs:
               targetType: 'inline'
               script: |
-                # Find CxOne CLI
-                $cxExe = Get-ChildItem -Path "$env:AGENT_TEMPDIRECTORY/_tasks" -Recurse -Filter "cx.exe" | Select-Object -First 1
-                if (-not $cxExe) { Write-Error "CxOne CLI not found!"; exit 1 }
-                
-                $cxDir = Split-Path $cxExe.FullName
-                Write-Host "CxOne CLI found: $($cxExe.FullName)"
-                Write-Host "CxOne CLI dir: $cxDir"
-                
-                Set-Location $cxDir
-                
-                # Run PR decoration
-                .\cx.exe utils pr azure `
-                  --debug `
+                $CX_EXE = "C:\CLI\ast-cli_2.3.38_windows_x64\cx.exe"
+
+                if (-not (Test-Path $CX_EXE)) {
+                  Write-Error "CxOne CLI not found at $CX_EXE"
+                  exit 1
+                }
+
+                $CX_DIR = Split-Path $CX_EXE
+
+                Write-Host "CxOne CLI found : $CX_EXE"
+                Write-Host "CxOne CLI dir   : $CX_DIR"
+
+                Set-Location $CX_DIR
+
+                Write-Host "PR decoration"
+                Write-Host "--scan-id    : $env:CHECKMARXAST_CXONESCANID"
+                Write-Host "--namespace : $env:CXONE_ADONAMESPACE"
+                Write-Host "--project   : $(Build.Repository.Name)"
+                Write-Host "--pr-number : $(System.PullRequest.PullRequestId)"
+                Write-Host "--base-uri  : $(CXONE_BASEURI)"
+                Write-Host "--client-id : $(CXONE_CLIENT)"
+                Write-Host "--tenant    : $(CXONE_TENANT)"
+                Write-Host "--project   : $(System.TeamProject)"
+
+                & $CX_EXE utils pr azure --debug `
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
                   --project "$(System.TeamProject)" `
                   --pr-number $(System.PullRequest.PullRequestId) `
-                  --token $env:CXONE_PATADO `
-                  --base-uri $env:CXONE_BASEURI `
-                  --client-id $env:CXONE_CLIENT `
-                  --client-secret $env:CXONE_SECRET `
-                  --tenant $env:CXONE_TENANT
+                  --token $(CXONE_PATADO) `
+                  --base-uri $(CXONE_BASEURI) `
+                  --client-id $(CXONE_CLIENT) `
+                  --client-secret $(CXONE_SECRET) `
+                  --tenant $(CXONE_TENANT)
