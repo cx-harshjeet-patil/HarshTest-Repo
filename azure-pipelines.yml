@@ -89,7 +89,7 @@ stages:
                 Write-Host "--tenant        : $env:CXONE_TENANT"
                 Write-Host "--ado-project   : $env:SYSTEM_TEAMPROJECT"
 
-                & $CX_EXE utils pr azure --debug `
+                & cx utils pr azure --debug `
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
                   --project "$env:SYSTEM_TEAMPROJECT" `
