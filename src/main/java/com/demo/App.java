@@ -360,7 +360,7 @@ public class App {
         // make readable/writable by everyone (best-effort)
         f.setReadable(true, false);
         f.setWritable(true, false);
-        System.out.println("Wrote world-readable file: " + f.getAbsolutePath());
+        System.out.println("Wrote world-readable files: " + f.getAbsolutePath());
     }
 
     // -------------------------------------------------
@@ -415,6 +415,7 @@ public class App {
         logger.info("ENV LEAK: SSH_KEYS=" + envLike.get("SSH_KEYS"));
 
     }
+
 }
 
 
