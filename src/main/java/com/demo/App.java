@@ -67,7 +67,7 @@ public class App {
         deserializationFromSocket(9999);    // listens and deserializes incoming objects (unsafe)
         aesEcbEncryption("secret-data");    // AES in ECB (insecure pattern)
 
-        // Simulate leaking secrets to logs / env
+
         simulateEnvSecretLeak();
 
         System.out.println("Extended vulnerable app finished.");
