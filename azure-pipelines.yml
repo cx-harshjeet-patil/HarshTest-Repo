@@ -53,7 +53,7 @@ stages:
               enablePrDecoration: true
               failOnHigh: false
               failOnMedium: false
-              additionalParams: '--debug --filter "status=NEW"'
+              additionalParams: '--debug'
 
           # -----------------------
           # Manual PR Decoration
@@ -84,8 +84,8 @@ stages:
                 Write-Host "--project       : $env:BUILD_REPOSITORY_NAME"
                 Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
                 Write-Host "--base-uri      : $env:CXONE_BASEURI"
-                Write-Host "--client-id     : $env:CLIENTID"
-                Write-Host "--client-secret : $env:CLIENTSECRET"
+                Write-Host "--client-id     : $env:CXONE_CLIENTID"
+                Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
                 Write-Host "--tenant        : $env:CXONE_TENANT"
                 Write-Host "--ado-project   : $env:SYSTEM_TEAMPROJECT"
 
