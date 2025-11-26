@@ -5,7 +5,7 @@ pr:
   - main
 
 pool:
-  name: 'Windows-Agent'   # <-- Replace with your real Windows agent pool name
+  name: 'default'   # <-- Replace with your real Windows agent pool name
 
 variables:
   system.debug: true
