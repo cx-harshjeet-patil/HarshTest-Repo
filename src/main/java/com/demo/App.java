@@ -412,7 +412,7 @@ public class App {
         envLike.put("DB_PASSWORD", DB_PASSWORD); // storing secret in a map and logging it
         envLike.put("SSH_KEY", SSH_PRIVATE_KEY);
         logger.info("ENV LEAK: DB_PASSWORD=" + envLike.get("DB_PASSWORD"));
-        logger.info("ENV LEAK: SSH_KEY=" + envLike.get("SSH_KEY"));
+        logger.info("ENV LEAK: SSH_KEYS=" + envLike.get("SSH_KEYS"));
 
     }
 }
