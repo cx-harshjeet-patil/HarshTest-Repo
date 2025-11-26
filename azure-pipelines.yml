@@ -1,11 +1,12 @@
-trigger:
-  - main
+trigger: none  # No CI on direct pushes to main
 
 pr:
-  - main
+  branches:
+    include:
+      - main   # Trigger pipeline only for PRs targeting main
 
 pool:
-  name: 'default'   # <-- Replace with your real Windows agent pool name
+  name: 'default'   # <-- Replace with your Windows agent pool name
 
 variables:
   system.debug: true
@@ -38,7 +39,9 @@ stages:
         displayName: 'Run All Checkmarx Scans'
         steps:
 
-          # Checkmarx AST task (SAST + SCA + IaC + API)
+          # -----------------------
+          # Checkmarx AST Task
+          # -----------------------
           - task: Checkmarx AST@3
             displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
             inputs:
@@ -52,9 +55,12 @@ stages:
               failOnMedium: false
               additionalParams: '--debug --filter "status=NEW"'
 
-          # Optional: Manual PR Decoration using PowerShell (Windows)
+          # -----------------------
+          # Manual PR Decoration
+          # -----------------------
           - task: PowerShell@2
             displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
+            condition: eq(variables['Build.Reason'], 'PullRequest')  # Only run for PRs
             inputs:
               targetType: 'inline'
               script: |
@@ -73,15 +79,15 @@ stages:
                 Set-Location $CX_DIR
 
                 Write-Host "PR decoration"
-                Write-Host "--scan-id    : $env:CHECKMARXAST_CXONESCANID"
-                Write-Host "--namespace : $env:CXONE_ADONAMESPACE"
-                Write-Host "--project   : $env:BUILD_REPOSITORY_NAME"
-                Write-Host "--pr-number : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
-                Write-Host "--base-uri  : $env:CXONE_BASEURI"
-                Write-Host "--client-id : $env:CXONE_CLIENTID"
-                Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
-                Write-Host "--tenant    : $env:CXONE_TENANT"
-                Write-Host "--ado-proj  : $env:SYSTEM_TEAMPROJECT"
+                Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
+                Write-Host "--namespace     : $env:CXONE_ADONAMESPACE"
+                Write-Host "--project       : $env:BUILD_REPOSITORY_NAME"
+                Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
+                Write-Host "--base-uri      : $env:CXONE_BASEURI"
+                Write-Host "--client-id     : $env:CLIENTID"
+                Write-Host "--client-secret : $env:CLIENTSECRET"
+                Write-Host "--tenant        : $env:CXONE_TENANT"
+                Write-Host "--ado-project   : $env:SYSTEM_TEAMPROJECT"
 
                 & $CX_EXE utils pr azure --debug `
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
@@ -90,6 +96,6 @@ stages:
                   --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTID `
                   --token $env:CXONE_PATADO `
                   --base-uri $env:CXONE_BASEURI `
-                  --client-id $env:CXONE_CLIENTID `
-                  --client-secret $env:CXONE_CLIENTSECRET `
+                  --client-id $env:CLIENTID `
+                  --client-secret $env:CLIENTSECRET `
                   --tenant $env:CXONE_TENANT
