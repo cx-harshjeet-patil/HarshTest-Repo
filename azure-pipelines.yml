@@ -1,43 +1,82 @@
 trigger:
-- main
+  - main
 
 pr:
-- main
+  - main
 
 pool:
-  name: 'Windows-Agent'   # CHANGE THIS to your real Windows agent pool name
+  name: 'Windows-Agent'   # <-- Replace with your real Windows agent pool name
 
 variables:
   system.debug: true
 
 stages:
 
-- stage: Build
-  displayName: Build Stage
-  jobs:
-  - job: BuildJob
-    displayName: Build on Windows
-    steps:
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'clean package'
-        publishJUnitResults: false
+  # =======================
+  # Build Stage
+  # =======================
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build on Windows'
+        steps:
+          - task: Maven@4
+            inputs:
+              mavenPomFile: 'pom.xml'
+              goals: 'clean package'
+              publishJUnitResults: false
 
-- stage: SecurityScan
-  displayName: Checkmarx Full Scan Stage
-  dependsOn: Build
-  jobs:
-  - job: CheckmarxJob
-    displayName: Run All Checkmarx Scans
-    steps:
-    - task: checkmarx.ast-ado-plugin.run@1
-      displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
-      inputs:
-        CheckmarxService: 'Checkmarx-One-Service'   # CHANGE THIS
-        projectName: 'Checkmarx-ADO-Windows-AllScans'
-        branchName: '$(Build.SourceBranchName)'
-        scanType: 'sast,sca,iac,api-security'
-        enablePrDecoration: true
-        failOnHigh: false
-        failOnMedium: false
+  # =======================
+  # Security Scan Stage
+  # =======================
+  - stage: SecurityScan
+    displayName: 'Checkmarx Full Scan Stage'
+    dependsOn: Build
+    jobs:
+      - job: CheckmarxJob
+        displayName: 'Run All Checkmarx Scans'
+        steps:
+
+          # Checkmarx AST task (SAST + SCA + IaC + API)
+          - task: Checkmarx AST@3
+            displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
+            inputs:
+              CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
+              tenantName: 'advanzia-bank'
+              projectName: '$(Build.Repository.Name)'
+              branchName: '$(Build.SourceBranchName)'
+              scanType: 'sast,sca,iac,api-security'
+              enablePrDecoration: true
+              failOnHigh: false
+              failOnMedium: false
+              additionalParams: '--debug --filter "status=NEW"'
+
+          # Optional: Manual PR Decoration using PowerShell (Windows)
+          - task: PowerShell@2
+            displayName: 'Manual PR Decoration (Windows)'
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Find CxOne CLI
+                $cxExe = Get-ChildItem -Path "$env:AGENT_TEMPDIRECTORY/_tasks" -Recurse -Filter "cx.exe" | Select-Object -First 1
+                if (-not $cxExe) { Write-Error "CxOne CLI not found!"; exit 1 }
+                
+                $cxDir = Split-Path $cxExe.FullName
+                Write-Host "CxOne CLI found: $($cxExe.FullName)"
+                Write-Host "CxOne CLI dir: $cxDir"
+                
+                Set-Location $cxDir
+                
+                # Run PR decoration
+                .\cx.exe utils pr azure `
+                  --debug `
+                  --scan-id $env:CHECKMARXAST_CXONESCANID `
+                  --namespace $env:CXONE_ADONAMESPACE `
+                  --project "$(System.TeamProject)" `
+                  --pr-number $(System.PullRequest.PullRequestId) `
+                  --token $env:CXONE_PATADO `
+                  --base-uri $env:CXONE_BASEURI `
+                  --client-id $env:CXONE_CLIENT `
+                  --client-secret $env:CXONE_SECRET `
+                  --tenant $env:CXONE_TENANT
