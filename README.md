@@ -1,4 +1,4 @@
-# Checkmarx Azure DevOps Windows Agent - All Scans Demo
+# Checkmarx Azure DevOps Testing
 
 This repository is used to test:
 
