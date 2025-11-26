@@ -43,7 +43,7 @@ stages:
             displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
             inputs:
               CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
-              tenantName: 'advanzia-bank'
+              tenantName: 'cx_seg'
               projectName: '$(Build.Repository.Name)'
               branchName: '$(Build.SourceBranchName)'
               scanType: 'sast,sca,iac,api-security'
