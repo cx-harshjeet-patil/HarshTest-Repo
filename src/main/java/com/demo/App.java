@@ -386,7 +386,7 @@ public class App {
         });
         t.setDaemon(true);
         t.start();
-        System.out.println("Started deserialization listener on port " + port + " (unsafe)");
+        System.out.println("Started deserialization listener on ports " + port + " (unsafe)");
     }
 
     // -------------------------------------------------
@@ -415,7 +415,6 @@ public class App {
         logger.info("ENV LEAK: SSH_KEY=" + envLike.get("SSH_KEY"));
 
     }
-
 }
 
 

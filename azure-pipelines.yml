@@ -96,6 +96,6 @@ stages:
                   --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTID `
                   --token $env:CXONE_PATADO `
                   --base-uri $env:CXONE_BASEURI `
-                --client-id $env:CXONE_CLIENTID `
+                  --client-id $env:CXONE_CLIENTID `
                   --client-secret $env:CXONE_CLIENTSECRET `
                   --tenant $env:CXONE_TENANT
