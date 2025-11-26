@@ -3,6 +3,7 @@ package com.demo;
 import java.io.*;
 import java.security.MessageDigest;
 import java.sql.*;
+import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -138,6 +139,41 @@ public class App {
         boolean DEBUG = true; // Vulnerable setting
         if (DEBUG) {
             System.out.println("Debug mode enabled in production!");
+        }
+    }
+    // -----------------------------------------
+    // JWT NONE ALGORITHM BYPASS
+    static void jwtNoneAlgorithm(String token) {
+        String[] parts = token.split("\\.");
+        byte[] decoded = Base64.getDecoder().decode(parts[1]);
+        System.out.println("JWT Payload without verification: " + new String(decoded));
+    }
+
+    // -----------------------------------------
+    // RACE CONDITION
+    static int counter = 0;
+    static void raceCondition() {
+        new Thread(() -> counter++).start();
+        new Thread(() -> counter++).start();
+    }
+
+    // -----------------------------------------
+    // INSECURE TEMP FILE
+    static void tempFileInsecure() throws Exception {
+        File temp = File.createTempFile("temp", ".txt");
+        FileWriter writer = new FileWriter(temp);
+        writer.write("Sensitive temp data");
+        writer.close();
+        System.out.println("Temp file: " + temp.getAbsolutePath());
+    }
+
+    // -----------------------------------------
+    // STACK TRACE EXPOSURE
+    static void stackTraceExposure() {
+        try {
+            int x = 10 / 0;
+        } catch (Exception e) {
+            e.printStackTrace(); // Information disclosure
         }
     }
 }
