@@ -93,7 +93,7 @@ stages:
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
                   --project "$env:SYSTEM_TEAMPROJECT" `
-                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMER `
+                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER `
                   --token $env:CXONE_PATADO `
                   --base-uri $env:CXONE_BASEURI `
                   --client-id $env:CXONE_CLIENTID `
