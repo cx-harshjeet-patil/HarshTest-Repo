@@ -6,7 +6,7 @@ pr:
       - main   # Trigger pipeline only for PRs targeting main
 
 pool:
-  name: 'default'   # <-- Replace with your Windows agent pool name
+  name: 'default'   # <-- Your Windows agent pool name
 
 variables:
   system.debug: true
@@ -45,7 +45,7 @@ stages:
           - task: Checkmarx AST@3
             displayName: 'Checkmarx AST'
             inputs:
-              CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
+              CheckmarxService: 'Checkmarx-One-Service'
               tenantName: 'cx_seg'
               projectName: '$(Build.Repository.Name)'
               branchName: '$(Build.SourceBranchName)'
@@ -56,42 +56,42 @@ stages:
               additionalParams: '--debug'
 
           # -----------------------
-          # Manual PR Decoration
+          # Manual PR Decoration  ✅ FIXED HERE
           # -----------------------
-          task: Bash@3
-          displayName: 'Find cx CLI and decorate the PR'
-          condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
-          inputs:
-            targetType: inline
-            script: |
-              echo "Finding cx CLI..."
-              CX_EXE="$(find /home/vsts/work/_tasks -type f -name cx | head -n 1)"
+          - task: Bash@3
+            displayName: 'Find cx CLI and decorate the PR'
+            condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+            inputs:
+              targetType: inline
+              script: |
+                echo "Finding cx CLI..."
+                CX_EXE="$(find /home/vsts/work/_tasks -type f -name cx | head -n 1)"
 
-              if [ -z "$CX_EXE" ]; then
-                echo "ERROR: CxOne CLI not found"
-                exit 1
-              fi
+                if [ -z "$CX_EXE" ]; then
+                  echo "ERROR: CxOne CLI not found"
+                  exit 1
+                fi
 
-              CX_DIR="$(dirname "$CX_EXE")"
+                CX_DIR="$(dirname "$CX_EXE")"
 
-              echo "CxOne CLI found : $CX_EXE"
-              echo "CxOne CLI dir   : $CX_DIR"
+                echo "CxOne CLI found : $CX_EXE"
+                echo "CxOne CLI dir   : $CX_DIR"
 
-              cd "$CX_DIR" || exit 1
+                cd "$CX_DIR" || exit 1
 
-              echo "PR decoration"
-              echo "--scan-id    : $CHECKMARXAST_CXONESCANID"
-              echo "--namespace  : $CXONE_ADONAMESPACE"
-              echo "--project    : $SYSTEM_TEAMPROJECT"
-              echo "--pr-number  : $SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
-              echo "--base-uri   : $CXONE_BASEURI"
-              echo "--tenant     : $CXONE_TENANT"
+                echo "PR decoration"
+                echo "--scan-id    : $CHECKMARXAST_CXONESCANID"
+                echo "--namespace  : $CXONE_ADONAMESPACE"
+                echo "--project    : $SYSTEM_TEAMPROJECT"
+                echo "--pr-number  : $SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+                echo "--base-uri   : $CXONE_BASEURI"
+                echo "--tenant     : $CXONE_TENANT"
 
-              ./cx utils pr azure --debug \
-                --scan-id "$CHECKMARXAST_CXONESCANID" \
-                --namespace "$CXONE_ADONAMESPACE" \
-                --project "$SYSTEM_TEAMPROJECT" \
-                --pr-number "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" \
-                --token "$CXONE_PATADO" \
-                --base-uri "$CXONE_BASEURI" \
-                --tenant "$CXONE_TENANT"
+                ./cx utils pr azure --debug \
+                  --scan-id "$CHECKMARXAST_CXONESCANID" \
+                  --namespace "$CXONE_ADONAMESPACE" \
+                  --project "$SYSTEM_TEAMPROJECT" \
+                  --pr-number "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" \
+                  --token "$CXONE_PATADO" \
+                  --base-uri "$CXONE_BASEURI" \
+                  --tenant "$CXONE_TENANT"
