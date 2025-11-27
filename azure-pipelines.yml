@@ -29,14 +29,14 @@ stages:
               publishJUnitResults: false
 
   # =======================
-  # Security Scan Stage
+  # Scan Stage
   # =======================
   - stage: SecurityScan
-    displayName: 'Checkmarx Full Scan Stage'
+    displayName: 'Checkmarx Scan Stage'
     dependsOn: Build
     jobs:
       - job: CheckmarxJob
-        displayName: 'Run All Checkmarx Scans'
+        displayName: 'Run Checkmarx Scans'
         steps:
 
           # -----------------------

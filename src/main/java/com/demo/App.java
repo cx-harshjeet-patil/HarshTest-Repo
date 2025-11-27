@@ -73,6 +73,9 @@ public class App {
         System.out.println("Extended vulnerable app finished.");
     }
 
+    private static void simulateEnvSecretLeak() {
+    }
+
     // -------------------------------------------------
     // WEAK CRYPTO (MD5)
     static void weakCrypto() throws Exception {
@@ -389,7 +392,6 @@ public class App {
         System.out.println("Started deserialization listener on ports " + port + " (unsafe)");
     }
 
-    // -------------------------------------------------
     // AES ECB encryption (insecure usage pattern)
     static void aesEcbEncryption(String plain) {
         try {

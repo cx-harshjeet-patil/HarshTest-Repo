@@ -20,7 +20,7 @@
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version> <!-- CVE-2015-4852 -->
+      <version>3.2.2</version> <!-- CVE-2015-4852 -->
     </dependency>
 
     <!-- 🔴 LOG4J RCE (LOG4SHELL) -->
