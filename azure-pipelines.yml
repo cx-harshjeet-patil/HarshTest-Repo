@@ -56,10 +56,10 @@ stages:
               additionalParams: '--debug'
 
           # -----------------------
-          # Manual PR Decoration  ✅ FIXED HERE
+          # Manual PR Decoration
           # -----------------------
           - task: Bash@3
-            displayName: 'Find cx CLI and decorate the PR'
+            displayName: 'PR Decoration'
             condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
             inputs:
               targetType: inline
