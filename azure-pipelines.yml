@@ -60,7 +60,7 @@ stages:
           # -----------------------
           - task: PowerShell@2
             displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
-            condition: eq(variables['Build.Reason'], 'PullRequest')  # Only run for PRs
+            condition: or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Manual'))
             inputs:
               targetType: 'inline'
               script: |
