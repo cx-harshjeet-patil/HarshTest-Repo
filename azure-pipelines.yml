@@ -82,7 +82,7 @@ stages:
                 Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
                 Write-Host "--namespace     : $env:CXONE_ADONAMESPACE"
                 Write-Host "--cx-project    : $env:BUILD_REPOSITORY_NAME"
-                Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
+                Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
                 Write-Host "--base-uri      : $env:CXONE_BASEURI"
                 Write-Host "--client-id     : $env:CXONE_CLIENTID"
                 Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
@@ -93,7 +93,7 @@ stages:
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
                   --project "$env:SYSTEM_TEAMPROJECT" `
-                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTID `
+                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMER `
                   --token $env:CXONE_PATADO `
                   --base-uri $env:CXONE_BASEURI `
                   --client-id $env:CXONE_CLIENTID `
