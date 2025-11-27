@@ -389,7 +389,6 @@ public class App {
         System.out.println("Started deserialization listener on ports " + port + " (unsafe)");
     }
 
-    // -------------------------------------------------
     // AES ECB encryption (insecure usage pattern)
     static void aesEcbEncryption(String plain) {
         try {
