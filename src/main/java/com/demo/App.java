@@ -73,6 +73,9 @@ public class App {
         System.out.println("Extended vulnerable app finished.");
     }
 
+    private static void simulateEnvSecretLeak() {
+    }
+
     // -------------------------------------------------
     // WEAK CRYPTO (MD5)
     static void weakCrypto() throws Exception {
