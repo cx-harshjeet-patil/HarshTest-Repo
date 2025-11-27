@@ -81,7 +81,7 @@ stages:
                   Write-Host "--client-id     : $env:CXONE_CLIENTID"
                   Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
                   Write-Host "--tenant        : $env:CXONE_TENANT"
-                  Write-Host "--project       : $env:SYSTEM_TEAMPROJECT"
+                  Write-Host "--project       : $env:BUILD_REPOSITORY_NAME"
                   & $CX_EXE utils pr azure --debug `
                     --scan-id $env:CHECKMARXAST_CXONESCANID `
                     --namespace $env:CXONE_ADONAMESPACE `
