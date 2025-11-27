@@ -43,7 +43,7 @@ stages:
           # Checkmarx AST Task
           # -----------------------
           - task: Checkmarx AST@3
-            displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
+            displayName: 'Checkmarx AST'
             inputs:
               CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
               tenantName: 'cx_seg'
@@ -59,7 +59,7 @@ stages:
           # Manual PR Decoration
           # -----------------------
           - task: PowerShell@2
-            displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
+            displayName: 'PR labeler'
             condition: or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Manual'))
             inputs:
               targetType: 'inline'
