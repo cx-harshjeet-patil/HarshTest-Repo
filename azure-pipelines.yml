@@ -58,44 +58,40 @@ stages:
           # -----------------------
           # Manual PR Decoration
           # -----------------------
-          - task: PowerShell@2
-            displayName: 'PR labeler'
-            condition: or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Manual'))
-            inputs:
-              targetType: 'inline'
-              script: |
-                $CX_EXE = "C:\CLI\ast-cli_2.3.38_windows_x64\cx.exe"
+          task: Bash@3
+          displayName: 'Find cx CLI and decorate the PR'
+          condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.Reason'], 'Manual'))
+          inputs:
+            targetType: inline
+            script: |
+              echo "Finding cx CLI..."
+              CX_EXE="$(find /home/vsts/work/_tasks -type f -name cx | head -n 1)"
 
-                if (-not (Test-Path $CX_EXE)) {
-                  Write-Error "CxOne CLI not found at $CX_EXE"
-                  exit 1
-                }
+              if [ -z "$CX_EXE" ]; then
+                echo "ERROR: CxOne CLI not found"
+                exit 1
+              fi
 
-                $CX_DIR = Split-Path $CX_EXE
+              CX_DIR="$(dirname "$CX_EXE")"
 
-                Write-Host "CxOne CLI found : $CX_EXE"
-                Write-Host "CxOne CLI dir   : $CX_DIR"
+              echo "CxOne CLI found : $CX_EXE"
+              echo "CxOne CLI dir   : $CX_DIR"
 
-                Set-Location $CX_DIR
+              cd "$CX_DIR" || exit 1
 
-                Write-Host "PR decoration"
-                Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
-                Write-Host "--namespace     : $env:CXONE_ADONAMESPACE"
-                Write-Host "--cx-project    : $env:BUILD_REPOSITORY_NAME"
-                Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
-                Write-Host "--base-uri      : $env:CXONE_BASEURI"
-                Write-Host "--client-id     : $env:CXONE_CLIENTID"
-                Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
-                Write-Host "--tenant        : $env:CXONE_TENANT"
-                Write-Host "--project       : $env:SYSTEM_TEAMPROJECT"
+              echo "PR decoration"
+              echo "--scan-id    : $CHECKMARXAST_CXONESCANID"
+              echo "--namespace  : $CXONE_ADONAMESPACE"
+              echo "--project    : $SYSTEM_TEAMPROJECT"
+              echo "--pr-number  : $SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+              echo "--base-uri   : $CXONE_BASEURI"
+              echo "--tenant     : $CXONE_TENANT"
 
-                & $CX_EXE cx utils pr azure --debug `
-                  --scan-id $env:CHECKMARXAST_CXONESCANID `
-                  --namespace $env:CXONE_ADONAMESPACE `
-                  --project "$env:SYSTEM_TEAMPROJECT" `
-                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER `
-                  --token $env:CXONE_PATADO `
-                  --base-uri $env:CXONE_BASEURI `
-                  --client-id $env:CXONE_CLIENTID `
-                  --client-secret $env:CXONE_CLIENTSECRET `
-                  --tenant $env:CXONE_TENANT
+              ./cx utils pr azure --debug \
+                --scan-id "$CHECKMARXAST_CXONESCANID" \
+                --namespace "$CXONE_ADONAMESPACE" \
+                --project "$SYSTEM_TEAMPROJECT" \
+                --pr-number "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" \
+                --token "$CXONE_PATADO" \
+                --base-uri "$CXONE_BASEURI" \
+                --tenant "$CXONE_TENANT"
