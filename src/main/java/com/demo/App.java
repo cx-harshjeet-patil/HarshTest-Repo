@@ -404,18 +404,6 @@ public class App {
             logger.warning("AES ECB failed: " + e.getMessage());
         }
     }
-
-    // -------------------------------------------------
-    // Simulate leaking secrets to logs / storing in env-like map
-    static void simulateEnvSecretLeak() {
-        java.util.Map<String, String> envLike = new java.util.HashMap<>();
-        envLike.put("DB_PASSWORD", DB_PASSWORD); // storing secret in a map and logging it
-        envLike.put("SSH_KEY", SSH_PRIVATE_KEY);
-        logger.info("ENV LEAK: DB_PASSWORDS=" + envLike.get("DB_PASSWORDS"));
-        logger.info("ENV LEAK: SSH_KEYS=" + envLike.get("SSH_KEYS"));
-
-    }
-
 }
 
 
