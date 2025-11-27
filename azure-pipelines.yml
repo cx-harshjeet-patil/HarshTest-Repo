@@ -43,7 +43,7 @@ stages:
           # Checkmarx AST Task
           # -----------------------
           - task: Checkmarx AST@3
-            displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
+            displayName: 'Checkmarx AST'
             inputs:
               CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
               tenantName: 'cx_seg'
@@ -59,8 +59,8 @@ stages:
           # Manual PR Decoration
           # -----------------------
           - task: PowerShell@2
-            displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
-            condition: eq(variables['Build.Reason'], 'PullRequest')  # Only run for PRs
+            displayName: 'PR labeler'
+            condition: or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Manual'))
             inputs:
               targetType: 'inline'
               script: |
@@ -89,7 +89,7 @@ stages:
                 Write-Host "--tenant        : $env:CXONE_TENANT"
                 Write-Host "--project       : $env:SYSTEM_TEAMPROJECT"
 
-                & cx utils pr azure --debug `
+                & $CX_EXE utils pr azure --debug `
                   --scan-id $env:CHECKMARXAST_CXONESCANID `
                   --namespace $env:CXONE_ADONAMESPACE `
                   --project "$env:SYSTEM_TEAMPROJECT" `
