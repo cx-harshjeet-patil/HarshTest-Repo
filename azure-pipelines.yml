@@ -6,7 +6,7 @@ pr:
       - main   # Trigger pipeline only for PRs targeting main
 
 pool:
-  name: 'default'   # <-- Replace with your Windows agent pool name
+  name: 'default'   # <-- Your Windows agent pool name
 
 variables:
   system.debug: true
@@ -29,23 +29,23 @@ stages:
               publishJUnitResults: false
 
   # =======================
-  # Security Scan Stage
+  # Scan Stage
   # =======================
   - stage: SecurityScan
-    displayName: 'Checkmarx Full Scan Stage'
+    displayName: 'Checkmarx Scan Stage'
     dependsOn: Build
     jobs:
       - job: CheckmarxJob
-        displayName: 'Run All Checkmarx Scans'
+        displayName: 'Run Checkmarx Scans'
         steps:
 
           # -----------------------
           # Checkmarx AST Task
           # -----------------------
           - task: Checkmarx AST@3
-            displayName: 'Checkmarx AST - SAST + SCA + IaC + API'
+            displayName: 'Checkmarx Scan'
             inputs:
-              CheckmarxService: 'Checkmarx-One-Service'   # <-- Your Checkmarx service connection
+              CheckmarxService: 'Checkmarx-One-Service'
               tenantName: 'cx_seg'
               projectName: '$(Build.Repository.Name)'
               branchName: '$(Build.SourceBranchName)'
@@ -56,46 +56,39 @@ stages:
               additionalParams: '--debug'
 
           # -----------------------
-          # Manual PR Decoration
+          #PR Decoration
           # -----------------------
           - task: PowerShell@2
-            displayName: 'Find cx CLI and run it manually to decorate the PR (Windows)'
-            condition: eq(variables['Build.Reason'], 'PullRequest')  # Only run for PRs
+            displayName: 'PR Decoration'
+            condition: or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Manual'))
             inputs:
-              targetType: 'inline'
-              script: |
-                $CX_EXE = "C:\CLI\ast-cli_2.3.38_windows_x64\cx.exe"
-
-                if (-not (Test-Path $CX_EXE)) {
-                  Write-Error "CxOne CLI not found at $CX_EXE"
-                  exit 1
-                }
-
-                $CX_DIR = Split-Path $CX_EXE
-
-                Write-Host "CxOne CLI found : $CX_EXE"
-                Write-Host "CxOne CLI dir   : $CX_DIR"
-
-                Set-Location $CX_DIR
-
-                Write-Host "PR decoration"
-                Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
-                Write-Host "--namespace     : $env:CXONE_ADONAMESPACE"
-                Write-Host "--cx-project    : $env:BUILD_REPOSITORY_NAME"
-                Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
-                Write-Host "--base-uri      : $env:CXONE_BASEURI"
-                Write-Host "--client-id     : $env:CXONE_CLIENTID"
-                Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
-                Write-Host "--tenant        : $env:CXONE_TENANT"
-                Write-Host "--project       : $env:SYSTEM_TEAMPROJECT"
-
-                & cx utils pr azure --debug `
-                  --scan-id $env:CHECKMARXAST_CXONESCANID `
-                  --namespace $env:CXONE_ADONAMESPACE `
-                  --project "$env:SYSTEM_TEAMPROJECT" `
-                  --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTID `
-                  --token $env:CXONE_PATADO `
-                  --base-uri $env:CXONE_BASEURI `
-                  --client-id $env:CXONE_CLIENTID `
-                  --client-secret $env:CXONE_CLIENTSECRET `
-                  --tenant $env:CXONE_TENANT
+                targetType: 'inline'
+                script: |
+                  $CX_EXE = "C:\CLI\ast-cli_2.3.38_windows_x64\cx.exe"
+                  if (-not (Test-Path $CX_EXE)) {
+                    Write-Error "CxOne CLI not found at $CX_EXE"
+                    exit 1
+                  }
+                  $CX_DIR = Split-Path $CX_EXE
+                  Write-Host "CxOne CLI found : $CX_EXE"
+                  Write-Host "CxOne CLI dir   : $CX_DIR"
+                  Set-Location $CX_DIR
+                  Write-Host "PR decoration"
+                  Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
+                  Write-Host "--namespace     : $env:CXONE_ADONAMESPACE"
+                  Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+                  Write-Host "--base-uri      : $env:CXONE_BASEURI"
+                  Write-Host "--client-id     : $env:CXONE_CLIENTID"
+                  Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
+                  Write-Host "--tenant        : $env:CXONE_TENANT"
+                  Write-Host "--project       : $env:BUILD_REPOSITORY_NAME"
+                  & $CX_EXE utils pr azure --debug `
+                    --scan-id $env:CHECKMARXAST_CXONESCANID `
+                    --namespace $env:CXONE_ADONAMESPACE `
+                    --project "$env:BUILD_REPOSITORY_NAME" `
+                    --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER `
+                    --token $env:CXONE_PATADO `
+                    --base-uri $env:CXONE_BASEURI `
+                    --client-id $env:CXONE_CLIENTID `
+                    --client-secret $env:CXONE_CLIENTSECRET `
+                    --tenant $env:CXONE_TENANT

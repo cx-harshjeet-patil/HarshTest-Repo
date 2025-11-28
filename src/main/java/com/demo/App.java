@@ -67,10 +67,13 @@ public class App {
         deserializationFromSocket(9999);    // listens and deserializes incoming objects (unsafe)
         aesEcbEncryption("secret-data");    // AES in ECB (insecure pattern)
 
-        // Simulate leaking secrets to logs / env
+
         simulateEnvSecretLeak();
 
         System.out.println("Extended vulnerable app finished.");
+    }
+
+    private static void simulateEnvSecretLeak() {
     }
 
     // -------------------------------------------------
@@ -389,7 +392,6 @@ public class App {
         System.out.println("Started deserialization listener on ports " + port + " (unsafe)");
     }
 
-    // -------------------------------------------------
     // AES ECB encryption (insecure usage pattern)
     static void aesEcbEncryption(String plain) {
         try {
@@ -404,18 +406,6 @@ public class App {
             logger.warning("AES ECB failed: " + e.getMessage());
         }
     }
-
-    // -------------------------------------------------
-    // Simulate leaking secrets to logs / storing in env-like map
-    static void simulateEnvSecretLeak() {
-        java.util.Map<String, String> envLike = new java.util.HashMap<>();
-        envLike.put("DB_PASSWORD", DB_PASSWORD); // storing secret in a map and logging it
-        envLike.put("SSH_KEY", SSH_PRIVATE_KEY);
-        logger.info("ENV LEAK: DB_PASSWORDS=" + envLike.get("DB_PASSWORDS"));
-        logger.info("ENV LEAK: SSH_KEYS=" + envLike.get("SSH_KEYS"));
-
-    }
-
 }
 
 
