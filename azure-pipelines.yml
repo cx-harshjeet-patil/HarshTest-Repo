@@ -82,13 +82,13 @@ stages:
                   Write-Host "--client-secret : $env:CXONE_CLIENTSECRET"
                   Write-Host "--tenant        : $env:CXONE_TENANT"
                   Write-Host "--project       : $env:BUILD_REPOSITORY_NAME"
-                  Write-Host "--token         : $env:CXONE_PATADO"
-                  & $CX_EXE utils pr azure --debug `
+                  Write-Host "--token         : $env:CXONE_PATGITHUB"
+                  & $CX_EXE utils pr github --debug `
                     --scan-id $env:CHECKMARXAST_CXONESCANID `
                     --namespace $env:CXONE_ADONAMESPACE `
                     --project "$env:BUILD_REPOSITORY_NAME" `
                     --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER `
-                    --token $env:CXONE_PATADO `
+                    --token $env:CXONE_PATGITHUB `
                     --base-uri $env:CXONE_BASEURI `
                     --client-id $env:CXONE_CLIENTID `
                     --client-secret $env:CXONE_CLIENTSECRET `
