@@ -75,6 +75,7 @@ stages:
                   Set-Location $CX_DIR
                   Write-Host "PR decoration"
                   Write-Host "--scan-id       : $env:CHECKMARXAST_CXONESCANID"
+                  Write-Host "--repo-name     : $env:CXONE_REPONAME"
                   Write-Host "--namespace     : $env:CXONE_GITHUBNAMESPACE"
                   Write-Host "--pr-number     : $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
                   Write-Host "--base-uri      : $env:CXONE_BASEURI"
@@ -84,6 +85,7 @@ stages:
                   Write-Host "--token         : $env:CXONE_PATGITHUB"
                   & $CX_EXE utils pr github --debug `
                     --scan-id $env:CHECKMARXAST_CXONESCANID `
+                    --repo-name $env:CXONE_REPONAME `
                     --namespace $env:CXONE_GITHUBNAMESPACE `
                     --pr-number $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER `
                     --token $env:CXONE_PATGITHUB `
