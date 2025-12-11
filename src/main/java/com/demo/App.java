@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -39,7 +40,6 @@ public class App {
         System.out.println("Windows Agent Checkmarx All Scans Test");
 
         // Existing vulnerabilities
-        weakCrypto();
         insecureRandom();
         logSensitiveData();
         brokenAuthentication("admin");
@@ -78,11 +78,13 @@ public class App {
 
     // -------------------------------------------------
     // WEAK CRYPTO (MD5)
-    static void weakCrypto() throws Exception {
+    static void strongCryptoSHA256() throws Exception {
         String password = "admin123";
-        MessageDigest md = MessageDigest.getInstance("MD5"); // Weak Algorithm
-        byte[] hash = md.digest(password.getBytes());
-        System.out.println("Weak hash (MD5): " + Base64.getEncoder().encodeToString(hash));
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256"); // Strong algorithm
+        byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+
+        System.out.println("Strong Hash (SHA-256): " + Base64.getEncoder().encodeToString(hash));
     }
 
     // -------------------------------------------------
